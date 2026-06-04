@@ -1,0 +1,69 @@
+{
+  "name": "typescript-express-template",
+  "version": "1.0.0",
+  "description": "A production-ready TypeScript Express.js boilerplate with ESLint, Prettier, and best practices",
+  "main": "dist/index.js",
+  "prisma": {
+    "schema": "prisma/schema"
+  },
+  "scripts": {
+    "start": "npm run lint && npm run build && node dist/index.js",
+    "dev": "nodemon --exec \"npm run lint || exit 0 && ts-node src/index.ts\"",
+    "build": "npm run lint && tsc",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    "format": "prettier --write src/**/*.ts",
+    "format:check": "prettier --check src/**/*.ts",
+    "type-check": "tsc --noEmit",
+    "update:check": "npm outdated",
+    "update:deps": "npm update",
+    "update:latest": "npx npm-check-updates -u && npm install"
+  },
+  "keywords": [
+    "typescript",
+    "express",
+    "template",
+    "boilerplate",
+    "eslint",
+    "prettier",
+    "nodejs"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.991.0",
+    "@aws-sdk/s3-request-presigner": "^3.991.0",
+    "@prisma/client": "^6.4.1",
+    "@types/nodemailer": "^7.0.9",
+    "@types/ws": "^8.18.1",
+    "bullmq": "^5.71.1",
+    "cors": "^2.8.6",
+    "dotenv": "^17.2.1",
+    "envalid": "^8.1.1",
+    "express": "^5.1.0",
+    "ioredis": "^5.10.1",
+    "node-cron": "^4.2.1",
+    "nodemailer": "^7.0.13",
+    "stripe": "^20.3.0",
+    "twilio": "^5.12.2",
+    "ws": "^8.19.0",
+    "zod": "^4.0.17"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/dotenv": "^6.1.1",
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.2.1",
+    "@types/stripe": "^8.0.416",
+    "@typescript-eslint/eslint-plugin": "^8.39.1",
+    "@typescript-eslint/parser": "^8.39.1",
+    "eslint": "^9.33.0",
+    "globals": "^16.3.0",
+    "nodemon": "^3.1.10",
+    "npm-check-updates": "^17.1.14",
+    "prettier": "^3.6.2",
+    "prisma": "^6.4.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
+  }
+}

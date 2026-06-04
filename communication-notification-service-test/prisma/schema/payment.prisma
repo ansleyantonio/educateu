@@ -1,0 +1,190 @@
+enum PaymentStatus {
+  PENDING
+  PAID
+  OVERDUE
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentPlan {
+  FULL_PAYMENT
+  INSTALLMENT
+}
+
+enum PaymentMethod {
+  CARD
+  BANK_TRANSFER
+  CASH
+  ONLINE
+}
+
+enum PaymentHistoryStatus {
+  PAID
+  PENDING
+  APPROVED
+  REJECTED
+  FAILED
+}
+
+model PaymentRecord {
+  id          String      @id @default(uuid())
+  applicantId String // Reference to application ID
+  application Application @relation(fields: [applicantId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  // Payment details
+  totalFee        Float
+  paidAmount      Float         @default(0)
+  remainingAmount Float         @default(0)
+  paymentPlan     PaymentPlan
+  paymentStatus   PaymentStatus @default(PENDING)
+
+  // Installment details
+  installmentsPaid  Int       @default(0)
+  totalInstallments Int?
+  nextPaymentDate   DateTime?
+  nextPaymentAmount Float?
+
+  // Due dates and reminders
+  dueDate          DateTime?
+  lastReminderDate DateTime?
+
+  // Promotional code applied
+  promotionalCodeId String?
+  promotionalCode   PromotionalCode? @relation(fields: [promotionalCodeId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  discountApplied   Float?           @default(0)
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Payment history
+  paymentHistories PaymentHistory[]
+
+  @@map("payment_records")
+}
+
+model PaymentHistory {
+  id              String               @id @default(uuid())
+  paymentRecordId String
+  paymentRecord   PaymentRecord        @relation(fields: [paymentRecordId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  amount          Float
+  paymentMethod   PaymentMethod
+  status          PaymentHistoryStatus
+  paymentDate     DateTime
+
+  // Transaction details
+  transactionId       String?
+  reference           String?
+  //manual
+  bank_account_number String?
+  bank_account_name   String?
+  bank_name           String?
+  bank_swift_code     String?
+  bank_branch         String?
+  receipt_url         String?
+
+  // Processing details
+  processedBy    String?
+  processedDate  DateTime?
+  notes          String?
+  payment_status Boolean   @default(false)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  invoices Invoice[]
+
+  @@map("payment_histories")
+}
+
+model Invoice {
+  id               String          @id @default(uuid())
+  invoiceNumber    String
+  invoiceStatus    InvoiceStatus   @default(PENDING)
+  invoiceAmount    Float?
+  notes            String?
+  paymentHistoryId String?
+  paymentHistory   PaymentHistory? @relation(fields: [paymentHistoryId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+}
+
+enum InvoiceStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  PAID
+  CANCELLED
+}
+
+// Agent Commission System
+enum CommissionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  PAID
+}
+
+model AgentCommission {
+  id String @id @default(uuid())
+
+  applicationId String
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  // Commission details
+  baseAmount       Float // Base commission amount
+  commissionRate   Float // Commission percentage
+  commissionAmount Float // Calculated commission
+  status           CommissionStatus @default(PENDING)
+
+  // Payment tracking
+  paidAmount Float     @default(0)
+  paidDate   DateTime?
+
+  // Clawback tracking
+  isClawback     Boolean   @default(false)
+  clawbackReason String?
+  clawbackDate   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Commission payments
+  commissionPayments CommissionPayment[]
+
+  @@map("agent_commissions")
+}
+
+model CommissionPayment {
+  id                String          @id @default(uuid())
+  agentCommissionId String
+  agentCommission   AgentCommission @relation(fields: [agentCommissionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  amount        Float
+  paymentMethod PaymentMethod
+  status        PaymentHistoryStatus
+  paymentDate   DateTime
+
+  // Transaction details
+  transactionId String?
+  reference     String?
+  notes         String?
+
+  // Processing details
+  processedBy   String?
+  processedDate DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("commission_payments")
+}
+
+model BankInfo {
+  id            String       @id @default(uuid())
+  accountName   String
+  bankName      String
+  branchName    String
+  accountNumber String
+  swiftCode     String
+  currencyType  CurrencyType
+}

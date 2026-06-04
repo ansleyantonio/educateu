@@ -1,0 +1,18 @@
+enum CourseProgressStatus {
+  INCOMPLETE
+  COMPLETED
+}
+
+model CourseProgress {
+  id            String               @id @default(uuid())
+  contentId     String
+  status        CourseProgressStatus @default(INCOMPLETE)
+  lastPosition  Int                 @default(0)
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+
+  studentCourseId String
+  studentCourse   StudentCourse @relation(fields: [studentCourseId], references: [id])
+
+  @@unique([studentCourseId, contentId])
+}

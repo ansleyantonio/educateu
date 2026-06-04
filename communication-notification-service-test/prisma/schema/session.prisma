@@ -1,0 +1,29 @@
+enum SessionStatus {
+  ACTIVE
+  UPCOMING
+  CLOSED
+  TEMPORARILY_ACTIVE
+}
+
+enum Stage {
+  COMPLETED
+  IN_PROGRESS
+}
+
+model Session {
+  id               String            @id @default(uuid())
+  name             String
+  stage            Stage             @default(IN_PROGRESS)
+  status           SessionStatus
+  intakePeriod     String
+  year             Int
+  startDate        DateTime
+  endDate          DateTime
+  // sessionAbCourses SessionAbCourse[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  SessionCourse    SessionCourse[]
+  courseSelections CourseSelection[]
+
+  @@unique([name, intakePeriod, year])
+}

@@ -1,0 +1,41 @@
+enum CModuleType {
+  DEGREE
+  DIPLOMA
+  CPD
+  PROFESSIONAL_CERTIFICATE
+}
+
+enum CModuleStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model CModule {
+  id                      String         @id @default(uuid())
+  courseType              CourseType
+  moduleType              String
+  title                   String
+  code                    String?        @unique
+  status                  CModuleStatus? @default(ACTIVE)
+  description             String?
+  credit                  Int?
+  estimatedTimeToComplete Int
+  learningOutcome         String?
+  forumOrDiscussionBoard  Boolean        @default(false)
+  contentsOrder           Json?
+  createdAt               DateTime       @default(now())
+  updatedAt               DateTime       @updatedAt
+
+  facultyId         String?
+  faculty           UserPortalCategoryRole? @relation(fields: [facultyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  courseFaculty     CourseFaculty[]
+  awardingBodyId    String?
+  awardingBody      AwardingBody?           @relation(fields: [awardingBodyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  // lessons                 Lesson[]
+  // awardingBodyModules     AwardingBodyModule[]
+  moduleLessons     ModuleLesson[]
+  CourseModule      CourseModule[]
+  moduleAssessments ModuleAssessment[]
+
+  @@unique([code, awardingBodyId])
+}

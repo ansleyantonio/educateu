@@ -1,0 +1,52 @@
+enum PromotionalCodeStatus {
+  ACTIVE
+  INACTIVE
+  EXPIRED
+}
+
+enum DiscountType {
+  PERCENTAGE
+  FIXED_AMOUNT
+  CDP
+}
+
+model PromotionalCode {
+  id            String                @id @default(uuid())
+  codeName      String                @unique
+  discountType  DiscountType
+  discountValue Float
+  startDate     DateTime
+  endDate       DateTime?
+  status        PromotionalCodeStatus @default(ACTIVE)
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
+
+  // Many-to-many relationship with courses
+  promotionalCodeCourses PromotionalCodeCourse[]
+
+  // Usage tracking
+  usageCount Int  @default(0)
+  maxUsage   Int? // null means unlimited
+
+  // Payment records using this promo code
+  paymentRecords PaymentRecord[]
+
+  @@map("promotional_codes")
+}
+
+model PromotionalCodeCourse {
+  id                String          @id @default(uuid())
+  promotionalCodeId String
+  promotionalCode   PromotionalCode @relation(fields: [promotionalCodeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  sessionCourse   SessionCourse? @relation(fields: [sessionCourseId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  sessionCourseId String?
+
+  courseId String?
+  course   Course? @relation(fields: [courseId], references: [id])
+
+  @@unique([promotionalCodeId, sessionCourseId])
+  @@map("promotional_code_courses")
+}

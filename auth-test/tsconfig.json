@@ -1,0 +1,11 @@
+{
+  // TypeScript configuration extending Node.js 20 base configuration
+  "extends": "@tsconfig/node20/tsconfig.json",
+  "compilerOptions": { 
+    // Output compiled JavaScript to dist directory
+    "outDir": "dist", 
+    // Allow importing JSON files as modules
+    "resolveJsonModule": true 
+  }
+}
+

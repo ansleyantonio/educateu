@@ -1,0 +1,13 @@
+model ApplicationLog {
+  id            String                 @id @default(uuid())
+  application   Application            @relation(fields: [applicationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  applicationId String
+  actor         UserPortalCategoryRole @relation(fields: [actorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  actorId       String
+  type          String
+  keys          String[]
+  value         String?
+  oldValue      String?
+  createdAt     DateTime               @default(now())
+  updatedAt     DateTime               @updatedAt
+}

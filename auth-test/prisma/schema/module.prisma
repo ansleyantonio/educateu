@@ -1,0 +1,10 @@
+model Module {
+  id                        String                     @id @default(uuid())
+  name                      String                     @unique
+  groupName                 String?
+  roleModules               RoleModule[]
+  userPortalCategoryModules UserPortalCategoryModule[]
+  portalCategoryModules     PortalCategoryModule[]
+  createdAt                 DateTime                   @default(now())
+  updatedAt                 DateTime                   @updatedAt
+}

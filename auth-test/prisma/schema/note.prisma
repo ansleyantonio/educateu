@@ -1,0 +1,7 @@
+model Note {
+  id               String            @id @default(uuid())
+  data             String            @db.Text
+  applicationNotes ApplicationNote[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+}

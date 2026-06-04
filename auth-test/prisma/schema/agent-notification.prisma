@@ -1,0 +1,26 @@
+model AgentNotification {
+  id            String             @id @default(uuid())
+  userId        String
+  title         String
+  message       String
+  type          NotificationType
+  status        NotificationStatus @default(UNREAD)
+  isArchived    Boolean            @default(false)
+  metadata      Json?
+  relatedEntity String?
+  readAt        DateTime?
+  archivedAt    DateTime?
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+}
+
+enum NotificationType {
+  APPLICATION_SUBMITTED
+  DOCUMENT_REQUEST
+}
+
+enum NotificationStatus {
+  UNREAD
+  READ
+  ARCHIVED
+}

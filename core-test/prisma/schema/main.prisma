@@ -1,0 +1,18 @@
+// Main Prisma schema configuration for EducateU Authentication Service
+// This file defines the database connection and client generation settings
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+// Generate Prisma client for TypeScript/JavaScript with schema folder support
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["prismaSchemaFolder"]
+}
+
+// Database connection configuration for PostgreSQL
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}

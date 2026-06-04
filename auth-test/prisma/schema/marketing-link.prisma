@@ -1,0 +1,21 @@
+enum MarketingLinkStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model MarketingLink {
+  id                String              @id @default(uuid())
+  marketingLinkName String
+  code              String              @unique
+  status            MarketingLinkStatus @default(ACTIVE)
+  startDate         DateTime
+  endDate           DateTime
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+
+  userPortalCategoryRoleId String
+  userPortalCategoryRole   UserPortalCategoryRole @relation(fields: [userPortalCategoryRoleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  applications            Application[]
+
+  @@unique([marketingLinkName, userPortalCategoryRoleId])
+}

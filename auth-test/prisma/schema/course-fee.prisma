@@ -1,0 +1,143 @@
+enum CourseFeeStatus {
+  ACTIVE
+  INACTIVE
+  ARCHIVED
+}
+
+enum CurrencyType {
+  USD
+  EUR
+  GBP
+  PKR
+}
+
+enum PromoCodeStatus {
+  ACTIVE
+  INACTIVE
+  UPCOMING
+}
+
+model CourseFee {
+  id              String         @id @default(uuid())
+  sessionCourseId String?
+  sessionCourse   SessionCourse? @relation(fields: [sessionCourseId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  // Fee details
+  overallCourseFee Float
+  currencyType     CurrencyType    @default(USD)
+  status           CourseFeeStatus @default(ACTIVE)
+
+  // Promotional settings
+  promoCodeStatus PromoCodeStatus @default(INACTIVE)
+  startDate       DateTime
+  endDate         DateTime
+
+  // Agreement settings for degree courses
+  agreementStatus Boolean @default(false)
+
+  scheduleType      String? // Immediate or Scheduled
+  newCourseFee      Float? // New overall course fee if applicable
+  scheduleFrequency String? // One-time or Recurring
+  effectiveDate     DateTime? // When the change takes effect
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Related entities
+  tieredPricings     TieredPricing[]
+  courseFeeLog       CourseFeeLog[]
+  courseFeeStructure CourseFeeStructure?
+
+  courseId String?
+  course   Course? @relation(fields: [courseId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@map("course_fees")
+}
+
+model TieredPricing {
+  id          String    @id @default(uuid())
+  courseFeeId String
+  courseFee   CourseFee @relation(fields: [courseFeeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  tierName  String // e.g., "Early Bird", "Regular", "Late"
+  price     Float
+  startDate DateTime
+  endDate   DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("tiered_pricings")
+}
+
+model CourseFeeLog {
+  id          String    @id @default(uuid())
+  courseFeeId String
+  courseFee   CourseFee @relation(fields: [courseFeeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  // Change tracking
+  fieldName    String // What field was changed
+  oldValue     String? // Previous value
+  newValue     String? // New value
+  changeReason String? // Reason for change
+
+  // User who made the change
+  changedById String
+
+  createdAt DateTime @default(now())
+
+  @@map("course_fee_logs")
+}
+
+// For degree courses with semester and module breakdown
+model CourseFeeStructure {
+  id          String    @id @default(uuid())
+  courseFeeId String    @unique
+  courseFee   CourseFee @relation(fields: [courseFeeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  // Structure details
+  totalSemesters Int
+  totalCredits   Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Semesters
+  semesters CourseSemester[]
+
+  @@map("course_fee_structures")
+}
+
+model CourseSemester {
+  id                   String             @id @default(uuid())
+  courseFeeStructureId String
+  courseFeeStructure   CourseFeeStructure @relation(fields: [courseFeeStructureId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  semesterName  String // e.g., "Semester 1", "Semester 2"
+  semesterFee   Float
+  semesterOrder Int // 1, 2, 3, etc.
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Modules in this semester
+  semesterModules CourseSemesterModule[]
+
+  @@map("course_semesters")
+}
+
+model CourseSemesterModule {
+  id               String         @id @default(uuid())
+  courseSemesterId String
+  courseSemester   CourseSemester @relation(fields: [courseSemesterId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  moduleName String // Module name
+  credits    Int // Credit hours
+  moduleFee  Float // Individual module fee
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("course_semester_modules")
+}

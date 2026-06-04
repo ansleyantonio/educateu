@@ -1,0 +1,43 @@
+enum discountType {
+  PERCENTAGE
+  FIXED_AMOUNT
+}
+
+enum frequency {
+  DAILY
+  WEEKLY
+  MONTHLY
+  YEARLY
+  ONCE
+}
+
+enum paymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  INACTIVE
+  ACTIVE
+}
+
+model financeSettings {
+  id               String         @id @default(uuid())
+  discountName     String
+  discountType     discountType?  @default(PERCENTAGE)
+  discountValue    Float
+  subjectEmail     String
+  templateEmail    String
+  subjectPayment   String
+  templatePayment  String
+  subjectReminder  String
+  templateReminder String
+  subjectInvoice   String
+  templateInvoice  String
+  autoReminder     Boolean        @default(false)
+  frequency        frequency      @default(ONCE)
+  courseId         String?
+  course           Course?        @relation(fields: [courseId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  paymentStatus    paymentStatus? @default(PENDING)
+  published        String         @default("INACTIVE")
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+}

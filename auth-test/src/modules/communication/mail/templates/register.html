@@ -1,0 +1,34 @@
+<html>
+  <body style="font-family: Arial, Helvetica, sans-serif; line-height: 1.5">
+    <p>Hi <strong>${firstName}</strong>,</p>
+    <p>
+      An account has been created for you by the administrator on
+      <strong>${platformName}</strong>.
+    </p>
+    <h3>Account Details</h3>
+    <ul style="list-style-type: none; padding-left: 0">
+      <li><strong>Username:</strong> ${email}</li>
+      ${ tempPassword ?
+      <li><strong>Temporary Password:</strong> ${tempPassword}</li>
+      : '' }
+      <li>
+        <strong>Login URL:</strong>
+        <a href="${loginUrl}" target="_blank" rel="noopener noreferrer"
+          >${loginUrl}</a
+        >
+      </li>
+    </ul>
+    <p>
+      We recommend logging in as soon as possible to update your password and
+      complete your profile.
+    </p>
+    <p>
+      If you have any questions or encounter any issues while logging in, feel
+      free to email
+      <a href="mailto:admin@rccgjesushouse.ca">admin@rccgjesushouse.ca</a>.
+    </p>
+
+    <p>Welcome, and we're glad to have you on board!</p>
+    <p style="margin-top: 2rem">Best regards,<br />The Abree Team</p>
+  </body>
+</html>

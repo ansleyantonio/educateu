@@ -1,0 +1,93 @@
+enum AdvancedCourseType {
+  DIPLOMA
+  DEGREE
+}
+
+enum DegreeType {
+  UNDERGRADUATE
+  POSTGRADUATE
+}
+
+enum DiplomaType {
+  HIGHER_EDUCATION
+  VOCATIONAL_OR_PROFESSIONAL
+}
+
+enum StudyMode {
+  SELF_PACED
+  INSTRUCTOR_LED
+  COHORT_BASED
+  BLENDED_OR_HYBRID_LEARNING
+}
+
+enum AccreditationStatus {
+  ACCREDITED
+  PROVISIONALLY_ACCREDITED
+  NOT_ACCREDITED
+}
+
+enum CourseType {
+  DEGREE_COURSE
+  DIPLOMA_COURSE
+  PROFESSIONAL_COURSE
+  CPD_COURSE
+}
+
+enum CourseStatus {
+  PUBLISHED
+  UNPUBLISHED
+  ARCHIVED
+}
+
+model Course {
+  id                           String               @id @default(uuid())
+  courseType                   CourseType
+  title                        String?
+  code                         String?              @unique
+  status                       CourseStatus?        @default(UNPUBLISHED)
+  hesaCourseId                 String?              @unique
+  degreeType                   DegreeType?
+  diplomaType                  DiplomaType?
+  intendedAward                String?
+  courseDescription            String?
+  studyModes                   Json?
+  durationLength               Int?
+  numberOfSemesters            Int?
+  totalCredits                 Int?
+  yearOneExpectedCredits       Int?
+  yearTwoExpectedCredits       Int?
+  yearThreeExpectedCredits     Int?
+  yearFourExpectedCredits      Int?
+  minimumPassingCreditsPerYear Int?
+  accreditationBody            String?
+  accreditationStatus          AccreditationStatus?
+  qualificationAim             String?
+  approvalDate                 DateTime?
+  reviewDate                   DateTime?
+  courseLeader                 String?
+  governanceNotes              String?
+  startDate                    DateTime?
+  endDate                      DateTime?
+  professionalAccreditation    String?
+  accreditationBodyCode        String?
+  accreditationStartDate       DateTime?
+  accreditationEndDate         DateTime?
+
+  awardingBodyId  String?
+  awardingBody    AwardingBody?    @relation(fields: [awardingBodyId], references: [id])
+  courseFaculty   CourseFaculty[]
+  // sessionAbCourses             SessionAbCourse[]
+  courseModules   CourseModule[]
+  courseAndModule CourseAndModule?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  sessionCourses  SessionCourse[]
+  financeSettings financeSettings[]
+
+  // Payment related relationships
+  promotionalCodeCourses PromotionalCodeCourse[]
+  courseFees             CourseFee[]
+
+  @@unique([title, courseType, awardingBodyId])
+}

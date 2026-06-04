@@ -1,0 +1,239 @@
+enum ApplicationStatus {
+  DRAFT
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum ApplicationStage {
+  NEW
+  ASSIGN
+  CHECK
+  SUBMIT
+  OUTCOME
+}
+
+enum GeneralFileCheckStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum AdditionalFileCheckStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum WellbeingCheckStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum Outcome {
+  PENDING
+  APPROVED_UNCONDITIONAL
+  APPROVED_CONDITIONAL
+  REJECTED
+}
+
+enum CredibilityStatus {
+  PENDING
+  PASSED
+  FAILED
+}
+
+model Application {
+  id                         String                      @id @default(uuid())
+  applicationId              String?                     @unique
+  status                     ApplicationStatus?          @default(DRAFT)
+  stage                      ApplicationStage?           @default(NEW)
+  credibilityStatus          CredibilityStatus?          @default(PENDING)
+  wellbeingCheckStatus       WellbeingCheckStatus?       @default(PENDING)
+  generalFileCheckStatus     GeneralFileCheckStatus?     @default(PENDING)
+  additionalFileCheckStatus  AdditionalFileCheckStatus?  @default(PENDING)
+  interviewOutcome           String?                     @default("PENDING")
+  outcome                    Outcome?                    @default(PENDING)
+  personalInformation        PersonalInformation?
+  academicBackground         AcademicBackground?
+  courseSelection            CourseSelection?
+  personalStatement          PersonalStatement?
+  disabilityAndAccessibility DisabilityAndAccessibility?
+  nextOfKin                  NextOfKin?
+  fund                       Fund?
+  reference                  Reference?
+  criminalBackground         CriminalBackground?
+  supportingDocument         SupportingDocument?
+  outcomeStatus              Boolean                     @default(false)
+
+  userPortalCategoryRoleApplications UserPortalCategoryRoleApplication[]
+  interviews                         Interview[]
+  applicationAssignmentLogs          ApplicationAssignmentLog[]
+  applicationNotes                   ApplicationNote[]
+  preScreeningHistories              PreScreeningHistory[]
+  fileCheckLogs                      FileCheckLog[]
+  createdAt                          DateTime                            @default(now())
+  updatedAt                          DateTime                            @updatedAt
+  userRoleApplications               UserRoleApplication[]
+  applicationLogs                    ApplicationLog[]
+
+  // Offer Expired 
+  offerExpired DateTime?
+
+  RegisteredStudent  RegisteredStudent[]
+  StudentEnrollments StudentEnrollments?
+
+  // Payment related relationships
+  paymentRecords   PaymentRecord[]
+  agentCommissions AgentCommission[]
+  marketingLinkId  String?
+  marketingLink    MarketingLink?    @relation(fields: [marketingLinkId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}
+
+enum Sex {
+  MALE
+  FEMALE
+  OTHER
+}
+
+model PersonalInformation {
+  id                     String      @id @default(uuid())
+  firstName              String
+  lastName               String
+  dateOfBirth            DateTime
+  email                  String
+  verifiedEmail          Boolean     @default(false)
+  countryOfBirth         String?
+  currentNationality     String?
+  sex                    Sex?
+  otherSex               String?
+  ethnicity              String?
+  mobileNumber           String?
+  countryOfResidence     String?
+  currentAddress         String
+  currentPostCode        String?
+  permanentAddress       String?
+  nationalIdentityType   String?
+  nationalIdentityNumber String?
+  application            Application @relation(fields: [applicationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  applicationId          String      @unique
+  createdAt              DateTime    @default(now())
+  updatedAt              DateTime    @updatedAt
+}
+
+model AcademicBackground {
+  id                          String      @id @default(uuid())
+  highestLevelOfQualification String?
+  areaOfQualification         String?
+  gradeOrResult               String?
+  yearCompleted               String?
+  countryOfIssue              String?
+  institutionName             String?
+  application                 Application @relation(fields: [applicationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  applicationId               String      @unique
+  createdAt                   DateTime    @default(now())
+  updatedAt                   DateTime    @updatedAt
+}
+
+model CourseSelection {
+  id             String         @id @default(uuid())
+  faculty        String?
+  sessionId      String?
+  session        Session?       @relation(fields: [sessionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  awardingBodyId String?
+  awardingBody   AwardingBody?  @relation(fields: [awardingBodyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  courseId       String?
+  course         SessionCourse? @relation(fields: [courseId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  intake         String?
+  yearOfCourse   String?
+  application    Application    @relation(fields: [applicationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  applicationId  String         @unique
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+}
+
+model PersonalStatement {
+  id            String      @id @default(uuid())
+  statement     String?     @db.Text
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  applicationId String      @unique
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model DisabilityAndAccessibility {
+  id                              String      @id @default(uuid())
+  disabilityAndAccessibility      Json?
+  disabilityAndAccessibilityOther String?
+  application                     Application @relation(fields: [applicationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  applicationId                   String      @unique
+  createdAt                       DateTime    @default(now())
+  updatedAt                       DateTime    @updatedAt
+}
+
+model NextOfKin {
+  id                String      @id @default(uuid())
+  relationship      String?
+  fullName          String?
+  phoneOrMobile     String?
+  address           String?
+  otherRelationship String?
+  application       Application @relation(fields: [applicationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  applicationId     String      @unique
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+}
+
+model Fund {
+  id            String      @id @default(uuid())
+  source        String?
+  otherSource   String?
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  applicationId String      @unique
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model Reference {
+  id                String      @id @default(uuid())
+  relationship      String?
+  email             String?
+  otherRelationship String?
+  application       Application @relation(fields: [applicationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  applicationId     String      @unique
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+}
+
+// enum PoliceClearance {
+//   YES
+//   NO
+// }
+
+enum YesNo {
+  YES
+  NO
+}
+
+model CriminalBackground {
+  id                                String      @id @default(uuid())
+  offenseOrPenalty                  YesNo?
+  offenseOrPenaltyDetails           String?     @db.Text
+  disqualificationOrSanction        YesNo?
+  disqualificationOrSanctionDetails String?     @db.Text
+  policeClearance                   YesNo?
+  application                       Application @relation(fields: [applicationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  applicationId                     String      @unique
+  createdAt                         DateTime    @default(now())
+  updatedAt                         DateTime    @updatedAt
+}
+
+model SupportingDocument {
+  id                            String                         @id @default(uuid())
+  application                   Application                    @relation(fields: [applicationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  applicationId                 String                         @unique
+  supportingDocumentAttachments SupportingDocumentAttachment[]
+  createdAt                     DateTime                       @default(now())
+  updatedAt                     DateTime                       @updatedAt
+}

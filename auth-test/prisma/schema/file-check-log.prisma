@@ -1,0 +1,25 @@
+enum FileCheckLogStatus {
+  PENDING
+  INFORMATION_REQUIRED
+  INFORMATION_REQUIRED_ADDITIONAL
+  NO_INFORMATION_REQUIRED
+  NO_INFORMATION_REQUIRED_ADDITIONAL
+}
+
+enum FileCheckLogType {
+  CHECK
+  ADDITIONAL_CHECK
+}
+
+model FileCheckLog {
+  id            String             @id @default(uuid())
+  name          String
+  type          FileCheckLogType
+  paths         Json
+  status        FileCheckLogStatus
+  createdBy     String
+  application   Application        @relation(fields: [applicationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  applicationId String
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+}

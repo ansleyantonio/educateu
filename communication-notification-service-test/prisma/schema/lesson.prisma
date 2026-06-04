@@ -1,0 +1,30 @@
+enum LessonType {
+  DEGREE
+  DIPLOMA
+  CPD
+  PROFESSIONAL_CERTIFICATE
+}
+
+model Lesson {
+  id                      String     @id @default(uuid())
+  title                   String
+  code                    String?
+  outcome                 String
+  type                    LessonType
+  estimatedTimeToComplete Int
+  accreditationBody       String?
+  // moduleId                String?
+  // module                  CModule?  @relation(fields: [moduleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  // lessonContents          LessonContent[]
+  // sesAbCModuleLesson SesAbCModuleLesson[]
+  moduleLessons  ModuleLesson[]
+  lessonContents LessonContent[]
+  awardingBodyId String?
+  awardingBody   AwardingBody?   @relation(fields: [awardingBodyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // @@unique([id, moduleId])
+}

@@ -1,0 +1,11 @@
+model Content {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  type        String
+  paths       String[]
+
+  lessonContents LessonContent[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+}

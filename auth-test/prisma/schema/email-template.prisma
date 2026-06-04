@@ -1,0 +1,42 @@
+model EmailTemplate {
+  id        String    @id @default(uuid())
+  type      EmailType
+  name      String
+  subject   String
+  body      String
+  variables Json?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  emailLogs EmailLog[]
+}
+
+model EmailLog {
+  id             String        @id @default(uuid())
+  templateId     String
+  template       EmailTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  recipientEmail String
+  recipientName  String?
+  subject        String
+  body           String
+  variables      Json?
+  status         EmailStatus   @default(PENDING)
+  sentAt         DateTime?
+  deliveredAt    DateTime?
+  openedAt       DateTime?
+  clickedAt      DateTime?
+  errorMessage   String?
+  metadata       Json?
+  createdAt      DateTime      @default(now())
+}
+
+enum EmailStatus {
+  PENDING
+  SENT
+  DELIVERED
+  OPENED
+  CLICKED
+  FAILED
+  BOUNCED
+  SPAM
+}

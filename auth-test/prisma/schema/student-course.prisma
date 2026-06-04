@@ -1,0 +1,25 @@
+enum EnrollmentStatus {
+  ACTIVE
+  WITHDRAWN
+  // ENROLLED
+  // PAUSED
+  // COMPLETED
+  // SUSPENDED
+}
+
+model StudentCourse {
+  id                String             @id @default(uuid())
+  lessonNotes       Json?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  enrollmentStatus  EnrollmentStatus   @default(ACTIVE)
+  studentId         String
+  student           Student            @relation(fields: [studentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  sessionCourseId   String
+  sessionCourse     SessionCourse      @relation(fields: [sessionCourseId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  supportRequests   SupportRequest[]
+  assessmentResults AssessmentResult[]
+  courseProgresses  CourseProgress[]
+
+  @@unique([studentId, sessionCourseId])
+}

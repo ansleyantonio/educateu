@@ -1,0 +1,207 @@
+/* Tailwind and Shadcn UI Styles */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Ant Design Styles */
+/* @import "antd/dist/antd.css";  */
+
+body {
+  font-family: var(--font-inter), sans-serif;
+}
+
+.rdp-vhidden {
+  @apply hidden;
+}
+/* Global Utilities */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+.step {
+  @apply relative px-4 py-2 text-center font-bold flex-1;
+  border-radius: 9999px 0 0 9999px; /* Rounded left corners */
+}
+
+.step::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: -10px; /* Overlapping chevron */
+  width: 20px;
+  height: 100%;
+  background: inherit;
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+}
+
+.step:last-child {
+  @apply rounded-r-full; /* Rounded right corners for last step */
+}
+
+.step:last-child::after {
+  display: none; /* No chevron for last step */
+}
+
+/* Base Theme and Dark Mode Styles */
+@layer base {
+  :root {
+    /* custom color add  start */
+
+    /* White */
+    --cusWhite: 255, 255, 255, 1;
+    --cusWhite100: 928;
+
+    /*Black*/
+    --cusBlack: 39, 46, 53, 1;
+    --cusBlack200: 27, 36, 44, 1;
+    --cusBlack300: 25, 33, 40, 1;
+    --cusBlack400: 24, 24, 27, 1;
+    --cusBlack600: 16, 24, 40, 1;
+    --cusBlack900: 0, 0, 0, 1;
+
+    --cusBlackLight: 59, 62, 62, 1;
+
+    /* Muted & Gray */
+    --cusMuted100: 127, 127, 134, 1;
+    --cusMuted: 126, 140, 154, 1;
+    --cusGray200: 85, 95, 109, 1;
+    --cusMutedLight: 113, 113, 122, 1;
+
+    /* Green */
+    --cusGreen: 21, 128, 61, 1;
+
+    /*Blue */
+    --cusBlue700: 48, 98, 212, 1;
+    --cusTealBlue: 12, 69, 110, 1;
+    --cusTealLightBlue: 1, 62, 91, 1;
+    --cusDeepTealBlue: 1, 18, 40, 1;
+    --cusCyanBlue100: 204, 231, 255, 1;
+    /* custom color add  end */
+
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
+    --primary: 0 0% 9%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    --accent: 0 0% 96.1%;
+    --accent-foreground: 0 0% 9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 3.9%;
+    --radius: 0.5rem;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  /* Dark theme colors */
+  .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+/* General Base Styles */
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Custom Scrollbar Styles */
+@layer components {
+  /* Custom scrollbar styles */
+  ::-webkit-scrollbar {
+    width: 10px; /* Set scrollbar width */
+    height: 10px; /* Set scrollbar height for horizontal */
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: #011c28; /* Thumb color */
+    border-radius: 10px;
+    border: 2px solid #d1d1d1; /* Optional: add a border for better visibility */
+  }
+
+  ::-webkit-scrollbar-track {
+    background-color: #f0f0f0; /* Track color */
+    border-radius: 10px;
+  }
+}
+
+/* Override disabled Select appearance */
+.ant-select-disabled .ant-select-selector {
+  background-color: white !important; /* Custom background */
+  color: #6d6d6d !important; /* Custom text color */
+  border-color: #ccc !important; /* Optional: border color */
+  cursor: not-allowed;
+}
+
+/* Custom Multi Select Styles */
+.custom-multiselect .ant-select-selector {
+  min-height: 40px !important;
+  width: 100% !important;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 6px 8px;
+  border-radius: 8px;
+}
+
+.cusFormLabel {
+  font-weight: 600;
+  text-transform: capitalize;
+  font-size: 14px;
+  line-height: 24px;
+  letter-spacing: 0.02em;
+}
+
+/* Custom Rich Text Editor Styles */
+.ql-editor {
+  min-height: 150px;
+}
+

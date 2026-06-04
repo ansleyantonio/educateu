@@ -1,0 +1,33 @@
+model AssessmentResult {
+  id              String        @id @default(uuid())
+  studentCourseId String
+  studentCourse   StudentCourse @relation(fields: [studentCourseId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  moduleId        String
+  // Assessment details (stored as they might change over time)
+  assessmentId    String // ID of the assessment from snapshot
+  assessmentTitle String // Title of the assessment from snapshot
+
+  // Assessment result details
+  score      Decimal? // Actual score achieved
+  maxScore   Decimal? // Maximum possible score
+  percentage Decimal? // Percentage score
+
+  // Store overall feedback or comments
+  feedback String?
+
+  // Store all answers as JSON to avoid complex relations
+  answers Json? // Array of question answers with their details
+
+  // Timestamps
+  startedAt   DateTime? // When the student started the assessment
+  submittedAt DateTime? // When the assessment was submitted
+
+  // Number of attempts used for this assessment
+  attemptCount Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([studentCourseId, assessmentId, moduleId]) // Each student can have one result per assessment
+}

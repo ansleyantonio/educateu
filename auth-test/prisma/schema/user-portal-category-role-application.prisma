@@ -1,0 +1,9 @@
+model UserPortalCategoryRoleApplication {
+  id                       String                 @id @default(uuid())
+  userPortalCategoryRoleId String
+  userPortalCategoryRole   UserPortalCategoryRole @relation(fields: [userPortalCategoryRoleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  applicationId            String
+  application              Application            @relation(fields: [applicationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([userPortalCategoryRoleId, applicationId])
+}

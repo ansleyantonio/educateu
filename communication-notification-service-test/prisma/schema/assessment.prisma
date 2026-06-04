@@ -1,0 +1,120 @@
+enum AssessmentCategory {
+  QUIZ
+  ASSIGNMENT
+}
+
+enum AssessmentType {
+  DEGREE
+  DIPLOMA
+  CPD
+  PROFESSIONAL
+}
+
+enum AssessmentStatus {
+  DRAFT
+  PUBLISHED
+}
+
+model Assessment {
+  id                              String             @id @default(uuid())
+  nameOrTitle                     String
+  assessmentCode                  String
+  assessmentCategory              AssessmentCategory
+  assessmentType                  AssessmentType
+  questionSize                    Int?
+  descriptionOrInstructions       String             @db.Text
+  status                          AssessmentStatus   @default(DRAFT)
+  dueDate                         DateTime?
+  availableStartDate              DateTime
+  availableEndDate                DateTime
+  timeLimit                       Int
+  totalPointsOrWeight             Int
+  weight                          Int? @default(0)
+  passingScore                    Int?
+  attempts                        Int
+  lateSubmissions                 Boolean
+  mitigatingCircumstancesStudents Json?
+  assignmentQuestionsOrder        Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  awardingBodyId      String?
+  awardingBody        AwardingBody?        @relation(fields: [awardingBodyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  quizQuestions       QuizQuestion[]
+  quizQuestionsOrder  Json?
+  assignmentQuestions AssignmentQuestion[]
+
+  moduleAssessments ModuleAssessment[]
+}
+
+enum QuizQuestionType {
+  MULTIPLE_CHOICE
+  MULTIPLE_SELECT
+  FILL_BLANK
+  TRUE_FALSE
+  MATCHING
+  NUMERICAL_ENTRY
+  ORDERING
+}
+
+model QuizQuestion {
+  id           String           @id @default(uuid())
+  type         QuizQuestionType
+  questionText String?
+  point        Int?
+  options      Json?
+  answer       Json?
+  partialMark  Boolean? // Add this field for multi-select questions
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  assessment   Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  assessmentId String
+}
+
+model AssignmentQuestion {
+  id                String  @id @default(uuid())
+  questionText      String?
+  submissionType    Json?
+  point             Int?
+  rubricName        String?
+  rubricDescription String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  assessment          Assessment       @relation(fields: [assessmentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  assessmentId        String
+  rubricCriteria      RubricCriteria[]
+  rubricCriteriaOrder Json?
+}
+
+model RubricCriteria {
+  id          String @id @default(uuid())
+  name        String
+  description String
+  weight      Int
+  levels      Json
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  assignmentQuestion   AssignmentQuestion? @relation(fields: [assignmentQuestionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  assignmentQuestionId String?
+  rubricTemplate       RubricTemplate?     @relation(fields: [rubricTemplateId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  rubricTemplateId     String?
+}
+
+model RubricTemplate {
+  id   String @id @default(uuid())
+  name String
+
+  rubricCriteria      RubricCriteria[]
+  rubricCriteriaOrder Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

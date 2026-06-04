@@ -1,0 +1,12 @@
+model RoleModule {
+  id               String   @id @default(uuid())
+  roleId           String
+  role             Role     @relation(fields: [roleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  moduleId         String
+  module           Module   @relation(fields: [moduleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  modulePermission Json
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@unique([roleId, moduleId])
+}

@@ -1,0 +1,62 @@
+model CommissionGroup {
+  id                String                @id @default(uuid())
+  name              String
+  type              EnRollment            @default(INTERNAL)
+  commissions       Commission[]
+  status            CommissionGroupStatus @default(ACTIVE)
+  bonus             Float?
+  studentLimit      Int?
+  agreementTemplate agreementTemplate[]
+}
+
+model Commission {
+  id                String          @id @default(uuid())
+  studentRangeLower Int
+  studentRangeUpper Int?
+  // bonus             Float?
+  firstRate         Float?
+  secondRate        Float?
+  thirdRate         Float?
+  fourthRate        Float?
+  commissionGroup   CommissionGroup @relation(fields: [commissionGroupId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  commissionGroupId String
+  // assignments       UserCommissionAssignment[]
+}
+
+model agreementTemplate {
+  id                String           @id @default(uuid())
+  name              String?
+  templateText      String
+  pdfBuffer         Bytes?
+  awardingBody      AwardingBody?    @relation(fields: [awardingBodyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  awardingBodyId    String?
+  templateType      templateType     @default(INTERNAL)
+  startDate         DateTime?
+  endDate           DateTime?
+  commissionGroup   CommissionGroup? @relation(fields: [commissionGroupId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  commissionGroupId String?
+  versions          Int?             @default(1)
+  matchId           String?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+}
+
+model expiryRemainder {
+  id         String @id @default(uuid())
+  daysBefore Int
+}
+
+enum EnRollment {
+  INTERNAL
+  EXTERNAL
+}
+
+enum templateType {
+  INTERNAL
+  EXTERNAL
+}
+
+enum CommissionGroupStatus {
+  ACTIVE
+  INACTIVE
+}

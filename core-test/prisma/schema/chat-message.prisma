@@ -1,0 +1,33 @@
+model ChatMessage {
+  id             String        @id @default(uuid())
+  content        String?
+  senderId       String
+  senderType     SenderType
+  recipientId    String
+  recipientType  SenderType
+  conversationId String?
+  attachments    Json?
+  status         MessageStatus @default(SENT)
+  isRead         Boolean       @default(false)
+  readAt         DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([senderId, recipientId])
+  @@index([recipientId, isRead])
+  @@index([createdAt])
+}
+
+enum SenderType {
+  USER
+  STUDENT
+  SENDER
+  RECEIVER
+}
+
+enum MessageStatus {
+  SENT
+  DELIVERED
+  READ
+  FAILED
+}

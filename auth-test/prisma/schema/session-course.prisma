@@ -1,0 +1,23 @@
+model SessionCourse {
+  id               String   @id @default(uuid())
+  sessionId        String
+  session          Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  courseId         String
+  course           Course   @relation(fields: [courseId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  ECAssessmentList Json?
+  courseSnapshot   Json
+  index            Int?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  CourseSelection   CourseSelection[]
+  discussionThreads DiscussionThread[]
+
+  // Payment related relationships
+  promotionalCodeCourses PromotionalCodeCourse[]
+  courseFees             CourseFee[]
+
+  studentCourses StudentCourse[]
+
+  @@unique([sessionId, courseId])
+}

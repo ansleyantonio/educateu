@@ -1,0 +1,31 @@
+enum SupportRequestStatus {
+  PENDING
+  RESOLVED
+  ASSIGNED
+  REJECTED
+}
+
+enum SupportRequestStage {
+  SUPPORT
+  EC_REQUEST
+  WITHDRAWAL
+}
+
+model SupportRequest {
+  id        String               @id @default(uuid())
+  tokenNo   String               @unique()
+  status    SupportRequestStatus @default(PENDING)
+  stage     SupportRequestStage  @default(SUPPORT)
+  moduleId  String?
+  subject   String
+  message   String
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+
+  studentCourseId String
+  studentCourse   StudentCourse @relation(fields: [studentCourseId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  // Faculty Relations
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}

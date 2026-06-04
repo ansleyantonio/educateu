@@ -1,0 +1,7 @@
+model Attachment {
+  id                            String                         @id @default(uuid())
+  paths                         Json?
+  supportingDocumentAttachments SupportingDocumentAttachment[]
+  createdAt                     DateTime                       @default(now())
+  updatedAt                     DateTime                       @updatedAt
+}

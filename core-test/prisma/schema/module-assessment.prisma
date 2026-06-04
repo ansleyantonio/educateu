@@ -1,0 +1,12 @@
+model ModuleAssessment {
+  id           String     @id @default(uuid())
+  cModuleId    String
+  cModule      CModule    @relation(fields: [cModuleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  assessmentId String
+  assessment   Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  index        Int?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@unique([cModuleId, assessmentId])
+}

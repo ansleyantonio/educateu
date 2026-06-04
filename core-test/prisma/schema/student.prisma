@@ -1,0 +1,69 @@
+model Student {
+  id             String  @id @default(uuid())
+  firstName      String?
+  lastName       String?
+  email          String? @unique
+  alternateEmail String? @unique
+  mobile         String?
+  username       String? @unique
+  password       String
+  address        String?
+  photo          String?
+  nationality    String?
+  studentNo      String?
+  bio            String?
+
+  accountStatus       accountStatus? @default(ACTIVE)
+  isTemporaryPassword Boolean        @default(true)
+  failedLoginAttempts Int            @default(0)
+  accountLockedUntil  DateTime?
+  lastLogin           DateTime?
+  mfaEnabled          Boolean        @default(true)
+  mfaSecret           String?
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+
+  securityQuestion           SecurityQuestion?           @relation(fields: [securityQuestionId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  securityQuestionId         String?
+  securityQuestionAnswer     String?
+  notification               Notification?
+  studentPasswordResetTokens StudentPasswordResetToken[]
+  studentCourses             StudentCourse[]
+  discussionThreads          DiscussionThread[]
+  threadComments             ThreadComment[]
+  //Thread:
+  threadLikes                ThreadLike[]
+  threadViews                ThreadView[]
+
+  // Comment:
+  commentLikes CommentLike[]
+  commentViews CommentView[]
+}
+
+// NEW: Track password reset tokens
+model StudentPasswordResetToken {
+  id        String   @id @default(uuid())
+  otp       String
+  studentId String
+  student   Student  @relation(fields: [studentId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SecurityQuestion {
+  id        String   @id @default(uuid())
+  question  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  students Student[]
+}
+
+enum accountStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  PENDING
+}

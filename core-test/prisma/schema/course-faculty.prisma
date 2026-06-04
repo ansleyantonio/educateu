@@ -1,0 +1,18 @@
+model CourseFaculty {
+  id             String        @id @default(uuid())
+  courseId       String?
+  facultyId      String?
+  coursemoduleId String?
+  facultyRole    FacultyRole   @default(TEACHER)
+  course         Course?       @relation(fields: [courseId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  cModule   CModule? @relation(fields: [coursemoduleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  faculty        User?         @relation(fields: [facultyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+enum FacultyRole {
+  TEACHER
+  TEACHING_ASSISTANT
+  GUEST_TEACHER
+}

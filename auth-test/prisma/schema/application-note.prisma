@@ -1,0 +1,29 @@
+enum NoteType {
+  GENERAL
+  UPDATE_REQUEST
+  FILE_UPDATE_REQUEST
+  CHECK
+  ADDITIONAL_CHECK
+}
+
+enum NoteVisibility {
+  PUBLIC
+  PRIVATE
+}
+
+model ApplicationNote {
+  id             String                 @id @default(uuid())
+  application    Application            @relation(fields: [applicationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  applicationId  String
+  note           Note                   @relation(fields: [noteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  noteId         String
+  type           NoteType               @default(GENERAL)
+  visibility     NoteVisibility         @default(PUBLIC)
+  fieldName      String?
+  attachmentName String?
+  paths          Json?
+  createdBy      UserPortalCategoryRole @relation(fields: [createdById], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  createdById    String
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @updatedAt
+}

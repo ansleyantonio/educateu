@@ -1,0 +1,273 @@
+export type IApplicants = {
+  id: string;
+  applicantName: string;
+  agentSource: string;
+  assigned: string;
+  courseProgramme: string;
+  checked: "Yes" | "No";
+  finance: "Approved" | "Pending" | "Declined";
+  credibility: "High" | "Medium" | "Low";
+  status: "In Progress" | "Backlog" | "Done" | "Todo";
+  stageProgress: string;
+};
+
+export const applicants = [
+  {
+    id: "1",
+    applicantName: "John Doe",
+    agentSource: "Agency A",
+    assigned: "Alice",
+    courseProgramme: "Computer Science",
+    checked: "06/12/2018",
+    finance: "Completed",
+    credibility: "Pending",
+    status: "Active",
+    stageProgress: "Submit",
+  },
+  {
+    id: "2",
+    applicantName: "Jane Smith",
+    agentSource: "Agency B",
+    assigned: "Bob",
+    courseProgramme: "Business Administration",
+    checked: "12/01/2019",
+    finance: "Incomplete",
+    credibility: "Pending",
+    status: "Active",
+    stageProgress: "Submit",
+  },
+  {
+    id: "3",
+    applicantName: "Michael Johnson",
+    agentSource: "Referral",
+    assigned: "Charlie",
+    courseProgramme: "Engineering",
+    checked: "15/03/2020",
+    finance: "Pending",
+    credibility: "Pending",
+    status: "Active",
+    stageProgress: "Submit",
+  },
+  {
+    id: "4",
+    applicantName: "Emily Davis",
+    agentSource: "Agency C",
+    assigned: "Alice",
+    courseProgramme: "Data Science",
+    checked: "20/05/2021",
+    finance: "Completed",
+    credibility: "Pending",
+    status: "Active",
+    stageProgress: "Submit",
+  },
+  {
+    id: "5",
+    applicantName: "Chris Lee",
+    agentSource: "Direct",
+    assigned: "Bob",
+    courseProgramme: "Artificial Intelligence",
+    checked: "05/11/2022",
+    finance: "Incomplete",
+    credibility: "Pending",
+    status: "Active",
+    stageProgress: "Submit",
+  },
+  {
+    id: "6",
+    applicantName: "Sarah Wilson",
+    agentSource: "Referral",
+    assigned: "Charlie",
+    courseProgramme: "Marketing",
+    checked: "10/08/2020",
+    finance: "Completed",
+    credibility: "Pending",
+    status: "Active",
+    stageProgress: "Submit",
+  },
+  {
+    id: "7",
+    applicantName: "Daniel Brown",
+    agentSource: "Agency A",
+    assigned: "Alice",
+    courseProgramme: "Cybersecurity",
+    checked: "18/09/2021",
+    finance: "Pending",
+    credibility: "Pending",
+    status: "Active",
+    stageProgress: "Submit",
+  },
+  {
+    id: "8",
+    applicantName: "Jessica White",
+    agentSource: "Agency B",
+    assigned: "Bob",
+    courseProgramme: "Finance",
+    checked: "02/06/2020",
+    finance: "Completed",
+    credibility: "Pending",
+    status: "Active",
+    stageProgress: "Submit",
+  },
+  {
+    id: "9",
+    applicantName: "Matthew Harris",
+    agentSource: "Referral",
+    assigned: "Charlie",
+    courseProgramme: "Economics",
+    checked: "30/07/2019",
+    finance: "Pending",
+    credibility: "Pending",
+    status: "Active",
+    stageProgress: "Submit",
+  },
+  {
+    id: "10",
+    applicantName: "Laura Clark",
+    agentSource: "Agency C",
+    assigned: "Alice",
+    courseProgramme: "Design",
+    checked: "25/03/2021",
+    finance: "Completed",
+    credibility: "Pending",
+    status: "Active",
+    stageProgress: "Submit",
+  },
+  {
+    id: "11",
+    applicantName: "Kevin Walker",
+    agentSource: "Direct",
+    assigned: "Bob",
+    courseProgramme: "Accounting",
+    checked: "15/01/2022",
+    finance: "Pending",
+    credibility: "Pending",
+    status: "Active",
+    stageProgress: "Submit",
+  },
+  {
+    id: "12",
+    applicantName: "Sophia Martinez",
+    agentSource: "Agency A",
+    assigned: "Charlie",
+    courseProgramme: "Biology",
+    checked: "12/11/2021",
+    finance: "Completed",
+    credibility: "Pending",
+    status: "Active",
+    stageProgress: "Submit",
+  },
+  {
+    id: "13",
+    applicantName: "Ryan Rodriguez",
+    agentSource: "Agency B",
+    assigned: "Alice",
+    courseProgramme: "Physics",
+    checked: "04/04/2018",
+    finance: "Incomplete",
+    credibility: "Pending",
+    status: "Active",
+    stageProgress: "Submit",
+  },
+  {
+    id: "14",
+    applicantName: "Olivia Lewis",
+    agentSource: "Referral",
+    assigned: "Bob",
+    courseProgramme: "Psychology",
+    checked: "09/02/2020",
+    finance: "Completed",
+    credibility: "Pending",
+    status: "Active",
+    stageProgress: "Submit",
+  },
+  {
+    id: "15",
+    applicantName: "Benjamin Hall",
+    agentSource: "Agency C",
+    assigned: "Charlie",
+    courseProgramme: "Law",
+    checked: "28/08/2019",
+    finance: "Incomplete",
+    credibility: "Pending",
+    status: "Active",
+    stageProgress: "Submit",
+  },
+  {
+    id: "16",
+    applicantName: "Grace Young",
+    agentSource: "Direct",
+    assigned: "Alice",
+    courseProgramme: "Chemistry",
+    checked: "22/10/2021",
+    finance: "Completed",
+    credibility: "Pending",
+    status: "Active",
+    stageProgress: "Submit",
+  },
+  {
+    id: "17",
+    applicantName: "Lucas King",
+    agentSource: "Agency A",
+    assigned: "Bob",
+    courseProgramme: "Environmental Science",
+    checked: "11/09/2020",
+    finance: "Pending",
+    credibility: "Pending",
+    status: "Active",
+    stageProgress: "Submit",
+  },
+  {
+    id: "18",
+    applicantName: "Ella Wright",
+    agentSource: "Agency B",
+    assigned: "Charlie",
+    courseProgramme: "Music",
+    checked: "16/01/2020",
+    finance: "Completed",
+    credibility: "Pending",
+    status: "Active",
+    stageProgress: "Submit",
+  },
+  {
+    id: "19",
+    applicantName: "Jack Green",
+    agentSource: "Referral",
+    assigned: "Alice",
+    courseProgramme: "Film Studies",
+    checked: "19/05/2018",
+    finance: "Incomplete",
+    credibility: "Pending",
+    status: "Active",
+    stageProgress: "Submit",
+  },
+  {
+    id: "20",
+    applicantName: "Mia Adams",
+    agentSource: "Agency C",
+    assigned: "Bob",
+    courseProgramme: "Philosophy",
+    checked: "07/07/2021",
+    finance: "Completed",
+    credibility: "Pending",
+    status: "Active",
+    stageProgress: "Submit",
+  },
+];
+
+export type IFilterLists = Partial<{
+  academicSession: string;
+  additionalFileCheck: string;
+  additionalStages: string;
+  admissionOfficer: string;
+  agent: string;
+  applicationDateRange: string;
+  applicationStatus: string;
+  awardingBody: string;
+  interviewStatus: string;
+  nationality: string;
+  onlineAssessmentStatus: string;
+  organization: string;
+  programCourse: string;
+  subAgent: string;
+  year: string;
+}>;

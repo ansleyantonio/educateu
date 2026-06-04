@@ -1,0 +1,68 @@
+model Notification {
+  id                     String  @id @default(uuid())
+  emailNotification      Boolean @default(true)
+  assignmentNotification Boolean @default(true)
+  gradeUpdate            Boolean @default(true)
+  forumReply             Boolean @default(true)
+  announcements          Boolean @default(true)
+  studentId              String  @unique
+  student                Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+}
+
+enum EmailType {
+  // Student or Application related EmailType
+  DUPLICATE_APPLICATION_EMAIL
+  APPLICATION_EMAIL_VERIFICATION
+  APPLICATION_DECISION_REQUEST_EMAIL
+  STUDENT_REGISTRATION_EMAIL
+  REGISTRATION_EMAIL
+  INCOMPLETE_APPLICATION_REMINDER_EMAIL
+  INCOMPLETE_APPLICATION_VERIFICATION_REMINDER_EMAIL
+
+  OTP_VERIFICATION_EMAIL
+  PASSWORD_UPDATE_EMAIL
+  FORGOT_PASSWORD_EMAIL
+  EMAIL_VERIFICATION_EMAIL
+  ENROLLMENT_EMAIL
+  APPLICATION_SUMMARY_EMAIL
+  APPLICATION_OUTCOME_EMAIL
+  STRIPE_APPLICATION_OUTCOME_EMAIL
+  ACCOUNT_CREATION_EMAIL
+  NOTES_EMAIL
+  BULK_MULTIPLE_EMAILS
+  COURSE_START_REMINDER_EMAIL
+
+  // Wellbeing EmailType
+  WELLBEING_APPROVED_EMAIL
+  WELLBEING_REJECTED_EMAIL
+  WELLBEING_STATUS_EMAIL
+
+  // Interview EmailType
+  INTERVIEW_CONFIRMATION_EMAIL
+  INTERVIEW_REMINDER_EMAIL_24H
+  INTERVIEW_REMINDER_EMAIL_1H
+  APPLICANT_INTERVIEW_PASSED
+  APPLICANT_INTERVIEW_FAILED
+  APPLICANT_INTERVIEW_CANCELED
+  APPLICANT_INTERVIEW_RESCHEDULED
+
+  // Pre-screening EmailType
+  DID_NOT_PICK_UP
+  PRE_SCREENING_PASSED
+  PRE_SCREENING_FAILED
+  INCOMPLETE_OR_PENDING
+  PRE_SCREENING_FAILED_2ND_TIME
+  PRE_SCREENING_FAILED_1ST_TIME
+}
+
+model NotificationLog {
+  id        String    @id @default(uuid())
+  message   String
+  emailType EmailType
+  recipient String
+  status    String    @default("SENT") // SENT, FAILED
+  createdAt DateTime  @default(now())
+  userId    String?
+
+  User User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

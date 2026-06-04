@@ -1,0 +1,12 @@
+model ModuleLesson {
+  id        String   @id @default(uuid())
+  cModuleId String
+  cModule   CModule  @relation(fields: [cModuleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  lessonId  String
+  lesson    Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  index     Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([cModuleId, lessonId])
+}

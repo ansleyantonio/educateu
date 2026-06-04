@@ -1,0 +1,942 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notification Bell - Realtime Test</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        min-height: 100vh;
+        padding: 20px;
+      }
+      .container {
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+
+      /* Header with Notification Bell */
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.05);
+        padding: 15px 25px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+        backdrop-filter: blur(10px);
+        position: relative;
+        z-index: 1;
+      }
+      .header h1 {
+        color: #fff;
+        font-size: 1.5rem;
+      }
+
+      /* Notification Bell */
+      .notification-bell-container {
+        position: relative;
+        z-index: 10000;
+      }
+      .notification-bell {
+        position: relative;
+        background: rgba(255, 255, 255, 0.1);
+        border: none;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+      }
+      .notification-bell:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: scale(1.05);
+      }
+      .notification-bell svg {
+        width: 24px;
+        height: 24px;
+        fill: #fff;
+      }
+      .notification-bell.has-unread {
+        animation: ring 0.5s ease-in-out;
+      }
+      @keyframes ring {
+        0%,
+        100% {
+          transform: rotate(0deg);
+        }
+        25% {
+          transform: rotate(-15deg);
+        }
+        75% {
+          transform: rotate(15deg);
+        }
+      }
+
+      /* Badge */
+      .badge {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background: #e94560;
+        color: white;
+        font-size: 12px;
+        font-weight: bold;
+        min-width: 22px;
+        height: 22px;
+        border-radius: 11px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 6px;
+        box-shadow: 0 2px 10px rgba(233, 69, 96, 0.5);
+      }
+      .badge.hidden {
+        display: none;
+      }
+
+      /* Dropdown */
+      .notification-dropdown {
+        position: fixed;
+        top: 80px;
+        right: 30px;
+        width: 400px;
+        max-height: 500px;
+        background: #1a1a2e;
+        border-radius: 15px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        border: 2px solid #00d9ff;
+        overflow: hidden;
+        display: none;
+        z-index: 9999;
+      }
+      .notification-dropdown.show {
+        display: block;
+        animation: slideDown 0.3s ease;
+      }
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Dropdown Header */
+      .dropdown-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 20px;
+        background: #16213e;
+        border-bottom: 1px solid #0f3460;
+      }
+      .dropdown-header h3 {
+        color: #fff;
+        font-size: 1rem;
+      }
+      .mark-all-read {
+        background: none;
+        border: none;
+        color: #00d9ff;
+        cursor: pointer;
+        font-size: 0.85rem;
+      }
+      .mark-all-read:hover {
+        text-decoration: underline;
+      }
+
+      /* Notification List */
+      .notification-list {
+        max-height: 400px;
+        overflow-y: auto;
+      }
+      .notification-item {
+        padding: 15px 20px;
+        border-bottom: 1px solid #0f3460;
+        cursor: pointer;
+        transition: background 0.2s;
+        position: relative;
+      }
+      .notification-item:hover {
+        background: rgba(0, 217, 255, 0.05);
+      }
+      .notification-item.unread {
+        background: rgba(0, 217, 255, 0.1);
+      }
+      .notification-item.unread::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: #00d9ff;
+      }
+      .notification-item.new {
+        animation: flash 0.5s ease-in-out;
+      }
+      @keyframes flash {
+        0%,
+        100% {
+          background: rgba(0, 217, 255, 0.1);
+        }
+        50% {
+          background: rgba(0, 217, 255, 0.3);
+        }
+      }
+      .notification-item h4 {
+        color: #fff;
+        font-size: 0.95rem;
+        margin-bottom: 5px;
+      }
+      .notification-item p {
+        color: #aaa;
+        font-size: 0.85rem;
+        line-height: 1.4;
+      }
+      .notification-item .time {
+        color: #666;
+        font-size: 0.75rem;
+        margin-top: 8px;
+      }
+      .empty-state {
+        padding: 40px 20px;
+        text-align: center;
+        color: #666;
+      }
+      .empty-state svg {
+        width: 60px;
+        height: 60px;
+        fill: #333;
+        margin-bottom: 15px;
+      }
+
+      /* Test Panel */
+      .test-panel {
+        background: rgba(255, 255, 255, 0.05);
+        padding: 20px;
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+      }
+      .test-panel h2 {
+        color: #00d9ff;
+        margin-bottom: 15px;
+        font-size: 1.1rem;
+      }
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-bottom: 15px;
+      }
+      .form-group {
+        margin-bottom: 15px;
+      }
+      label {
+        display: block;
+        color: #aaa;
+        font-size: 0.85rem;
+        margin-bottom: 5px;
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #0f3460;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.05);
+        color: #fff;
+        font-size: 14px;
+      }
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: none;
+        border-color: #00d9ff;
+      }
+      .btn {
+        padding: 12px 25px;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+      .btn-primary {
+        background: #e94560;
+        color: white;
+      }
+      .btn-primary:hover {
+        background: #ff6b6b;
+      }
+      .btn-success {
+        background: #00d9ff;
+        color: #1a1a2e;
+        font-weight: bold;
+      }
+      .btn-success:hover {
+        background: #00b8d4;
+      }
+      .status {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        margin-left: 10px;
+      }
+      .status.connected {
+        background: rgba(0, 200, 83, 0.2);
+        color: #00c853;
+      }
+      .status.disconnected {
+        background: rgba(233, 69, 96, 0.2);
+        color: #e94560;
+      }
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: currentColor;
+      }
+      .logs {
+        background: #0d0d1a;
+        border-radius: 8px;
+        padding: 15px;
+        max-height: 200px;
+        overflow-y: auto;
+        font-family: 'Consolas', monospace;
+        font-size: 12px;
+        margin-top: 15px;
+      }
+      .log-entry {
+        padding: 5px 0;
+        border-bottom: 1px solid #1a1a2e;
+      }
+      .log-entry.success {
+        color: #00c853;
+      }
+      .log-entry.error {
+        color: #e94560;
+      }
+      .log-entry.info {
+        color: #00d9ff;
+      }
+      .log-timestamp {
+        color: #666;
+        margin-right: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header with Notification Bell -->
+      <div class="header">
+        <h1>🔔 Realtime Notification Test</h1>
+
+        <div class="notification-bell-container">
+          <button
+            class="notification-bell"
+            id="notificationBell"
+            onclick="loadNotificationsOnBellClick()"
+          >
+            <svg viewBox="0 0 24 24">
+              <path
+                d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"
+              />
+            </svg>
+            <span class="badge hidden" id="badge">0</span>
+          </button>
+
+          <div class="notification-dropdown" id="dropdown">
+            <div class="dropdown-header">
+              <h3>Notifications</h3>
+              <button class="mark-all-read" onclick="markAllAsRead()">
+                Mark all as read
+              </button>
+            </div>
+            <div class="notification-list" id="notificationList">
+              <div class="empty-state">
+                <svg viewBox="0 0 24 24">
+                  <path
+                    d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"
+                  />
+                </svg>
+                <p>No notifications yet</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Test Panel -->
+      <div class="test-panel">
+        <h2>
+          🔌 WebSocket Connection
+          <span class="status disconnected" id="wsStatus">
+            <span class="status-dot"></span>
+            Disconnected
+          </span>
+          <span
+            class="status"
+            id="userInfo"
+            style="display: none; margin-left: 10px"
+          >
+            <span style="color: #00d9ff">👤 </span>
+            <span id="userIdDisplay"></span>
+          </span>
+        </h2>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>WebSocket URL</label>
+            <input
+              type="text"
+              id="wsUrl"
+              value="ws://localhost:7000/ws/agent-notification"
+            />
+          </div>
+          <div class="form-group">
+            <label>User ID</label>
+            <input type="text" id="userId" value="user-123" />
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-bottom: 20px">
+          <button
+            class="btn btn-success"
+            id="connectBtn"
+            onclick="connectWebSocket()"
+          >
+            Connect
+          </button>
+          <button
+            class="btn btn-primary"
+            id="registerBtn"
+            onclick="registerUser()"
+            disabled
+          >
+            Register User
+          </button>
+          <button
+            class="btn btn-primary"
+            onclick="loadNotificationsOnBellClick()"
+          >
+            🔔 Open Bell
+          </button>
+          <button
+            class="btn btn-primary"
+            onclick="fetchPreviousNotifications()"
+          >
+            🔄 Refresh
+          </button>
+        </div>
+
+        <h2 style="margin-top: 20px">📤 Send Test Notification</h2>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>API URL</label>
+            <input
+              type="text"
+              id="apiUrl"
+              value="http://localhost:7000/agent-notification"
+            />
+          </div>
+          <div class="form-group">
+            <label>User ID (must match registered user)</label>
+            <input type="text" id="notifUserId" value="user-123" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Title</label>
+            <input type="text" id="notifTitle" value="Application Submitted" />
+          </div>
+          <div class="form-group">
+            <label>Type</label>
+            <select id="notifType">
+              <option value="APPLICATION_SUBMITTED">
+                APPLICATION_SUBMITTED
+              </option>
+              <option value="DOCUMENT_REQUEST">DOCUMENT_REQUEST</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Message</label>
+          <textarea id="notifMessage" rows="2">
+Your application has been submitted successfully</textarea
+          >
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Related Entity</label>
+            <input type="text" id="notifRelatedEntity" value="app-456" />
+          </div>
+          <div class="form-group">
+            <label>Entity Type</label>
+            <select id="notifEntityType">
+              <option value="APPLICATION">APPLICATION</option>
+              <option value="COMMENT">COMMENT</option>
+              <option value="DOCUMENT">DOCUMENT</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="btn btn-primary" onclick="sendNotification()">
+          🚀 Send Notification
+        </button>
+
+        <div class="logs" id="logs"></div>
+      </div>
+    </div>
+
+    <script>
+      let ws = null;
+      let notifications = [];
+      let unreadCount = 0;
+
+      function timestamp() {
+        return new Date().toLocaleTimeString('en-US', { hour12: false });
+      }
+
+      function addLog(message, type = 'info') {
+        const logs = document.getElementById('logs');
+        const entry = document.createElement('div');
+        entry.className = `log-entry ${type}`;
+        entry.innerHTML = `<span class="log-timestamp">[${timestamp()}]</span>${message}`;
+        logs.appendChild(entry);
+        logs.scrollTop = logs.scrollHeight;
+      }
+
+      function updateStatus(connected) {
+        const status = document.getElementById('wsStatus');
+        const connectBtn = document.getElementById('connectBtn');
+        const registerBtn = document.getElementById('registerBtn');
+
+        if (connected) {
+          status.className = 'status connected';
+          status.innerHTML = '<span class="status-dot"></span>Connected';
+          connectBtn.disabled = true;
+          registerBtn.disabled = false;
+        } else {
+          status.className = 'status disconnected';
+          status.innerHTML = '<span class="status-dot"></span>Disconnected';
+          connectBtn.disabled = false;
+          registerBtn.disabled = true;
+        }
+      }
+
+      function updateBadge() {
+        const badge = document.getElementById('badge');
+        if (unreadCount > 0) {
+          badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+          badge.classList.remove('hidden');
+        } else {
+          badge.classList.add('hidden');
+        }
+      }
+
+      function renderNotifications() {
+        const list = document.getElementById('notificationList');
+
+        if (notifications.length === 0) {
+          list.innerHTML = `
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24">
+              <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+            </svg>
+            <p>No notifications yet</p>
+          </div>
+        `;
+          return;
+        }
+
+        list.innerHTML = notifications
+          .map(
+            n => `
+        <div class="notification-item ${n.unread ? 'unread' : ''} ${n.new ? 'new' : ''}" onclick="markAsRead('${n.id}')">
+          <h4>${n.title}</h4>
+          <p>${n.message}</p>
+          <div class="time">${n.time}</div>
+        </div>
+      `
+          )
+          .join('');
+      }
+
+      function addNotificationToBell(data) {
+        addLog(`🔔 === NEW NOTIFICATION RECEIVED ===`, 'success');
+        addLog(`📦 Raw data: ${JSON.stringify(data, null, 2)}`, 'info');
+
+        // Server sends: { notificationId, action, notification: { id, userId, title, message, type, ... } }
+        const notif = data.notification || {};
+
+        const title = String(notif.title || 'New Notification');
+        const message = String(notif.message || 'You have a new notification');
+
+        addLog(`📦 Title: "${title}", Message: "${message}"`, 'info');
+
+        const notification = {
+          id: String(data.notificationId || notif.id || Date.now()),
+          title: title,
+          message: message,
+          type: String(notif.type || 'APPLICATION_SUBMITTED'),
+          time: new Date().toLocaleString(),
+          unread: true,
+          new: true,
+        };
+
+        notifications.unshift(notification);
+        unreadCount++;
+
+        addLog(
+          `✅ Notification added to array. Total: ${notifications.length}, Unread: ${unreadCount}`,
+          'success'
+        );
+
+        // Update badge and render (works even if dropdown is closed)
+        updateBadge();
+        renderNotifications();
+        addLog(`🎨 Badge and list updated in DOM`, 'info');
+
+        // Trigger bell animation
+        const bell = document.getElementById('notificationBell');
+        bell.classList.add('has-unread');
+
+        // Show toast notification
+        showToast(title, message);
+        addLog(`🍞 Toast popup shown`, 'info');
+
+        setTimeout(() => bell.classList.remove('has-unread'), 500);
+
+        // AUTO-OPEN dropdown to show the new notification
+        const dropdown = document.getElementById('dropdown');
+        dropdown.classList.add('show');
+        addLog(`🔓 Dropdown opened automatically`, 'info');
+
+        // Remove 'new' flag after animation
+        setTimeout(() => {
+          const n = notifications.find(x => x.id === notification.id);
+          if (n) n.new = false;
+        }, 500);
+      }
+
+      function showToast(title, message) {
+        // Remove existing toast if any
+        const existingToast = document.getElementById('toast');
+        if (existingToast) existingToast.remove();
+
+        // Create toast element
+        const toast = document.createElement('div');
+        toast.id = 'toast';
+        toast.innerHTML = `
+        <div style="
+          position: fixed;
+          bottom: 30px;
+          right: 30px;
+          background: #1a1a2e;
+          border: 2px solid #00d9ff;
+          border-radius: 15px;
+          padding: 20px 25px;
+          box-shadow: 0 10px 40px rgba(0,217,255,0.3);
+          z-index: 99999;
+          animation: slideInRight 0.3s ease-out;
+          max-width: 350px;
+        ">
+          <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
+            <div style="
+              width: 40px;
+              height: 40px;
+              background: #00d9ff;
+              border-radius: 50%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              flex-shrink: 0;
+            ">
+              <svg style="width: 20px; height: 20px; fill: #1a1a2e;" viewBox="0 0 24 24">
+                <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+              </svg>
+            </div>
+            <div style="flex: 1;">
+              <h4 style="color: #fff; margin: 0; font-size: 0.95rem;">${title}</h4>
+            </div>
+            <button onclick="this.parentElement.parentElement.remove()" style="
+              background: none;
+              border: none;
+              color: #666;
+              cursor: pointer;
+              font-size: 1.2rem;
+              padding: 0;
+              line-height: 1;
+            ">&times;</button>
+          </div>
+          <p style="color: #aaa; margin: 0; font-size: 0.85rem; line-height: 1.4;">${message}</p>
+        </div>
+        <style>
+          @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+          }
+        </style>
+      `;
+
+        document.body.appendChild(toast);
+
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+          if (toast.parentElement) {
+            toast.style.animation = 'slideOutRight 0.3s ease-out';
+            setTimeout(() => toast.remove(), 300);
+          }
+        }, 5000);
+      }
+
+      // Add slide out animation
+      const style = document.createElement('style');
+      style.textContent = `
+      @keyframes slideOutRight {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+      }
+    `;
+      document.head.appendChild(style);
+
+      async function fetchPreviousNotifications() {
+        const userId = document.getElementById('userId').value;
+        const apiUrl = document
+          .getElementById('apiUrl')
+          .value.replace(/\/$/, ''); // Remove trailing slash
+
+        if (!userId) {
+          addLog('⚠️ User ID is required to fetch notifications', 'error');
+          return;
+        }
+
+        try {
+          addLog(
+            `📥 Fetching previous notifications from ${apiUrl}?userId=${userId}`,
+            'info'
+          );
+
+          const response = await fetch(`${apiUrl}?userId=${userId}&limit=20`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+          });
+
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || `HTTP ${response.status}`);
+          }
+
+          const result = await response.json();
+          addLog(
+            `✅ Fetched ${result.data?.length || 0} notifications`,
+            'success'
+          );
+
+          if (result.data && result.data.length > 0) {
+            // Convert API notifications to bell format
+            const fetchedNotifications = result.data.map(n => ({
+              id: n.id,
+              title: n.title,
+              message: n.message,
+              type: n.type,
+              time: new Date(n.createdAt).toLocaleString(),
+              unread: n.status === 'UNREAD',
+              new: false,
+            }));
+
+            // Merge with existing notifications (avoid duplicates)
+            const existingIds = new Set(notifications.map(n => n.id));
+            const newNotifications = fetchedNotifications.filter(
+              n => !existingIds.has(n.id)
+            );
+
+            if (newNotifications.length > 0) {
+              notifications = [...newNotifications, ...notifications];
+              unreadCount = notifications.filter(n => n.unread).length;
+              updateBadge();
+              renderNotifications();
+              addLog(
+                `🔔 Added ${newNotifications.length} notifications to bell`,
+                'info'
+              );
+            }
+          }
+        } catch (error) {
+          addLog(`❌ Failed to fetch notifications: ${error.message}`, 'error');
+        }
+      }
+
+      function toggleDropdown() {
+        const dropdown = document.getElementById('dropdown');
+        dropdown.classList.toggle('show');
+      }
+
+      async function loadNotificationsOnBellClick() {
+        // Always fetch latest notifications when bell is clicked
+        await fetchPreviousNotifications();
+        toggleDropdown();
+      }
+
+      function markAsRead(id) {
+        const notification = notifications.find(n => n.id === id);
+        if (notification && notification.unread) {
+          notification.unread = false;
+          unreadCount = Math.max(0, unreadCount - 1);
+          updateBadge();
+          renderNotifications();
+          addLog(`✅ Marked notification as read`, 'info');
+        }
+      }
+
+      function markAllAsRead() {
+        notifications.forEach(n => (n.unread = false));
+        unreadCount = 0;
+        updateBadge();
+        renderNotifications();
+        addLog(`✅ Marked all notifications as read`, 'success');
+      }
+
+      function connectWebSocket() {
+        const url = document.getElementById('wsUrl').value;
+        addLog(`Connecting to ${url}...`, 'info');
+
+        ws = new WebSocket(url);
+
+        ws.onopen = function () {
+          addLog('✅ WebSocket connected!', 'success');
+          updateStatus(true);
+          // Auto-fetch previous notifications when connected
+          setTimeout(() => fetchPreviousNotifications(), 500);
+        };
+
+        ws.onmessage = function (event) {
+          try {
+            const data = JSON.parse(event.data);
+            addLog(`📨 Received: ${JSON.stringify(data)}`, 'info');
+
+            // Handle different message formats
+            if (data.type === 'notification') {
+              // Format: { type: 'notification', data: {...} }
+              addNotificationToBell(data.data);
+            } else if (data.notification || data.notificationId) {
+              // Format: { notificationId: '...', notification: {...} }
+              addNotificationToBell(data);
+            } else if (data.id || data.title || data.message) {
+              // Format: Direct notification object { id, title, message, ... }
+              addNotificationToBell({ notification: data });
+            } else {
+              addLog(
+                `⚠️ Unknown message format: ${JSON.stringify(data)}`,
+                'error'
+              );
+            }
+          } catch (e) {
+            addLog(`⚠️ Parse error: ${e.message}`, 'error');
+          }
+        };
+
+        ws.onclose = function () {
+          addLog('❌ WebSocket disconnected', 'error');
+          updateStatus(false);
+          document.getElementById('userInfo').style.display = 'none';
+          ws = null;
+        };
+
+        ws.onerror = function () {
+          addLog('⚠️ WebSocket error', 'error');
+        };
+      }
+
+      function registerUser() {
+        if (!ws || ws.readyState !== WebSocket.OPEN) {
+          addLog('❌ Not connected', 'error');
+          return;
+        }
+
+        const userId = document.getElementById('userId').value;
+        ws.send(JSON.stringify({ type: 'register', userId }));
+        addLog(`📤 Registered as: ${userId}`, 'success');
+
+        // Show user info badge
+        document.getElementById('userIdDisplay').textContent = userId;
+        document.getElementById('userInfo').style.display = 'inline-flex';
+
+        // Fetch previous notifications after registration
+        setTimeout(() => fetchPreviousNotifications(), 300);
+      }
+
+      async function sendNotification() {
+        const apiUrl = document.getElementById('apiUrl').value;
+
+        const body = {
+          userId: document.getElementById('notifUserId').value,
+          title: document.getElementById('notifTitle').value,
+          message: document.getElementById('notifMessage').value,
+          type: document.getElementById('notifType').value,
+          relatedEntity: document.getElementById('notifRelatedEntity').value,
+          entityType: document.getElementById('notifEntityType').value,
+        };
+
+        addLog(`📤 Sending POST to ${apiUrl}`, 'info');
+
+        try {
+          const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+          });
+
+          const result = await response.json();
+
+          if (response.ok) {
+            addLog(`✅ ${result.message}`, 'success');
+          } else {
+            addLog(`❌ Error ${response.status}: ${result.message}`, 'error');
+          }
+        } catch (error) {
+          addLog(`❌ Request failed: ${error.message}`, 'error');
+        }
+      }
+
+      // Close dropdown when clicking outside
+      document.addEventListener('click', function (e) {
+        const container = document.querySelector(
+          '.notification-bell-container'
+        );
+        const dropdown = document.getElementById('dropdown');
+        if (!container.contains(e.target)) {
+          dropdown.classList.remove('show');
+        }
+      });
+
+      addLog(
+        '🚀 Page loaded. Click Connect, then Register User, then Send Notification',
+        'info'
+      );
+    </script>
+  </body>
+</html>
