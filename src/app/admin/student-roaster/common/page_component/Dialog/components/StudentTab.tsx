@@ -34,7 +34,7 @@ const StudentTab = ({ mode, data }: StudentTabProps) => {
           <TabButton value="profile" label="Profile" onClick={setIsValue} />
           <TabButton value="registration_details" label="Registration Details" onClick={setIsValue} />
           {mode === "registry" && <TabButton value="progression" label="Progression" onClick={setIsValue} />}
-          {mode === "support" && <TabButton value="engagement" label="Engagement" onClick={setIsValue} />}
+          {mode === "support" && <TabButton value="engagement" label="Viewing Analysis" onClick={setIsValue} />}
           <TabButton value="documents" label="Documents" onClick={setIsValue} />
           <TabButton value="notes" label="Notes" onClick={setIsValue} />
           <TabButton value="warnings" label="Warnings" onClick={setIsValue} />
@@ -52,7 +52,7 @@ const StudentTab = ({ mode, data }: StudentTabProps) => {
             <ProgressionTab mode={mode}/>
           </TabsContent>
           <TabsContent value="engagement">
-            <EngagementTab mode="support"/>
+            <EngagementTab mode={mode} data={data} />
           </TabsContent>
           <TabsContent value="documents">
             <DocumentsTab mode={mode} documents={data?.documents?.supportingDocumentAttachments}/>
