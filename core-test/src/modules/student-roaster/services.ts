@@ -254,6 +254,7 @@ const getRegisteredStudentDetails = async (reqBody: GetRegisteredStudentDetailsR
       agentRoleApplication?.userPortalCategoryRole?.userPortalCategory?.user.firstName +
       " " +
       agentRoleApplication?.userPortalCategoryRole?.userPortalCategory?.user.lastName,
+    viewingAnalysis,
   };
 
   const paginationData = {
