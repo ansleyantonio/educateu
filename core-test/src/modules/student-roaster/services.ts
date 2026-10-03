@@ -149,6 +149,99 @@ const getRegisteredStudentDetails = async (reqBody: GetRegisteredStudentDetailsR
     },
   });
 
+  // Build a privacy-safe viewing analysis from recorded platform activity.
+  // Do not infer attention, comprehension or causation from these events.
+  const application = student?.studentEnrollment?.application;
+  const studentEmail = application?.personalInformation?.email;
+  const sessionCourseId = application?.courseSelection?.courseId;
+  const platformStudent = studentEmail
+    ? await prisma.student.findUnique({
+        where: { email: studentEmail },
+        select: { id: true, lastLogin: true },
+      })
+    : null;
+
+  let viewingAnalysis: Record<string, unknown> = {
+    status: "unavailable",
+    reason: "No linked student account or course was found.",
+    metrics: null,
+    trend: [],
+    source: "CourseProgress and AssessmentResult",
+    generatedAt: new Date().toISOString(),
+  };
+
+  if (platformStudent && sessionCourseId) {
+    const studentCourse = await prisma.studentCourse.findUnique({
+      where: {
+        studentId_sessionCourseId: {
+          studentId: platformStudent.id,
+          sessionCourseId,
+        },
+      },
+      select: {
+        createdAt: true,
+        updatedAt: true,
+        courseProgresses: {
+          select: { status: true, lastPosition: true, updatedAt: true, createdAt: true },
+          orderBy: { updatedAt: "asc" },
+        },
+        assessmentResults: {
+          select: { submittedAt: true, percentage: true, updatedAt: true, createdAt: true },
+          orderBy: { updatedAt: "asc" },
+        },
+      },
+    });
+
+    if (studentCourse) {
+      const progress = studentCourse.courseProgresses;
+      const assessments = studentCourse.assessmentResults;
+      const completedContent = progress.filter((item) => item.status === "COMPLETED").length;
+      const trackedContent = progress.length;
+      const submittedAssessments = assessments.filter((item) => item.submittedAt).length;
+      const scoredAssessments = assessments
+        .map((item) => (item.percentage === null ? null : Number(item.percentage)))
+        .filter((value): value is number => value !== null && Number.isFinite(value));
+      const activityDates = [
+        ...progress.map((item) => item.updatedAt),
+        ...assessments.map((item) => item.updatedAt),
+        ...(platformStudent.lastLogin ? [platformStudent.lastLogin] : []),
+      ];
+      const lastActivityAt = activityDates.length
+        ? new Date(Math.max(...activityDates.map((date) => date.getTime()))).toISOString()
+        : null;
+      const trendMap = new Map<string, number>();
+      for (const date of activityDates) {
+        const weekStart = new Date(date);
+        weekStart.setUTCHours(0, 0, 0, 0);
+        weekStart.setUTCDate(weekStart.getUTCDate() - ((weekStart.getUTCDay() + 6) % 7));
+        const key = weekStart.toISOString().slice(0, 10);
+        trendMap.set(key, (trendMap.get(key) ?? 0) + 1);
+      }
+
+      viewingAnalysis = {
+        status: activityDates.length ? "current" : "no_data",
+        reason: activityDates.length ? null : "No viewing or assessment activity has been recorded.",
+        metrics: {
+          trackedContent,
+          completedContent,
+          completionRate: trackedContent ? Math.round((completedContent / trackedContent) * 100) : null,
+          submittedAssessments,
+          averageAssessmentScore: scoredAssessments.length
+            ? Math.round(scoredAssessments.reduce((sum, value) => sum + value, 0) / scoredAssessments.length)
+            : null,
+        },
+        trend: Array.from(trendMap.entries())
+          .sort(([left], [right]) => left.localeCompare(right))
+          .slice(-6)
+          .map(([week, activity]) => ({ week, activity })),
+        lastActivityAt,
+        lastLoginAt: platformStudent.lastLogin?.toISOString() ?? null,
+        source: "CourseProgress and AssessmentResult",
+        generatedAt: new Date().toISOString(),
+      };
+    }
+  }
+
   const formattedStudent = {
     id: student?.id,
     enrollmentStatus: courseStatus?.enrollmentStatus,
